@@ -1,0 +1,2 @@
+all the eneuiry api handled in env only logics here
+asked for the email waiting to recive it to upadte the local env
