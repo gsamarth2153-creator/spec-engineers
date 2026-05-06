@@ -28,9 +28,10 @@ const reasons = [
 
 export function WhyUsPreview() {
   return (
-    <section id="why-us" className="py-16 bg-background">
+    <section id="why-us" className="py-16 bg-secondary/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-12">
+        
+        <div className="flex items-center justify-between mb-12 p-8 rounded-2xl backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why Choose SPEC ENGINEERS
@@ -47,13 +48,13 @@ export function WhyUsPreview() {
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 ">
           {reasons.map((reason, index) => {
             const Icon = reason.icon
             return (
               <div
                 key={index}
-                className="card-shadow-premium industrial-texture bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition"
+                className="card-shadow-premium shadow-lg industrial-texture bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition"
               >
                 <Icon className="w-8 h-8 text-primary mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
