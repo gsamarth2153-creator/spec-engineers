@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { useEnquiry } from '@/app/enquiry-context'
 import Link from 'next/link'  
 import { AnimatedText } from '@/components/AnimatedText'
+import { Industries } from '@/components/industries'
 
 const industriesDetail = [
   {
@@ -16,6 +17,7 @@ const industriesDetail = [
 • Quality Assurance & Cost Efficiency Systems
 • Automation & Facility Modernization`,
     icon: '🏭',
+    image: "/Industries/manufacturing.jpg",
   },
   {
     id: 'automotive',
@@ -27,9 +29,10 @@ const industriesDetail = [
 • Design for Manufacturing (DFM) & FMEA Analysis
 • Fatigue Analysis & Performance Verification`,
     icon: '🚗',
+    image: "/Industries/Automotive.jpg",
   },
   {
-    id: 'metal processing and fabrication',
+    id: 'metal-processing-and-fabrication',
     title: 'Metal Processing & Fabrication',
     shortDescription: 'Specialized services for metalworking and fabrication projects',
     fullDescription: `Engineer superior precision and reliability through advanced fatigue analysis and stress evaluation. Optimize efficiency in high-demand applications while maintaining cost effectiveness.
@@ -38,9 +41,10 @@ const industriesDetail = [
 • Advanced Material Selection & Performance
 • Process Optimization & Cost Control`,
     icon: '⚙️',
+    image: "/Industries/PROCESSING.jpg"
   },
   {
-    id: 'paper industry',
+    id: 'paper-industry',
     title: 'Paper Industry',
     shortDescription: 'Specialized solutions for paper manufacturing and processing',
     fullDescription: `Minimize mill downtime and maximize efficiency through optimized pulp processing and equipment design. Reduce maintenance costs while extending equipment lifespan.
@@ -49,9 +53,10 @@ const industriesDetail = [
 • Equipment Reliability Analysis & Performance
 • Maintenance Cost Reduction & Efficiency`,
     icon: '📄',
+    image: "/Industries/PAPER.jpg",
   },
   {
-    id: 'plastics & recycling',
+    id: 'plastics-and-recycling',
     title: 'Plastics & Recycling',
     shortDescription: 'Specialized solutions for plastic manufacturing and recycling processes',
     fullDescription: `Modernize recycling systems and injection molding workflows with advanced process engineering solutions. Drive sustainability goals and improve cost efficiency across operations.
@@ -60,9 +65,10 @@ const industriesDetail = [
 • Material Flow Analysis & Cost Control
 • Automation & Sustainability Solutions`,
     icon: '♺',
+    image: "/Industries/PLASTICS.jpg",
   },
   {
-    id: 'corrugated industry',
+    id: 'corrugated-industry',
     title: 'Corrugated Industry',
     shortDescription: 'Specialized solutions for corrugated board manufacturing and processing',
     fullDescription: `Maximize board quality and production throughput with precision-engineered line solutions and optimization. Reduce waste and improve cost efficiency throughout operations.
@@ -71,9 +77,10 @@ const industriesDetail = [
 • Quality Control & Process Consistency Systems
 • Throughput Maximization & Waste Reduction`,
     icon: '📦',
+    image: "/Industries/CORRUGATED.jpg",
   },
   {
-    id: 'textile and fiber industry',
+    id: 'textile-and-fiber industry',
     title: 'Textile and Fiber Industry',
     shortDescription: 'Specialized solutions for textile and fiber manufacturing and processing',
     fullDescription: `Enhance mill efficiency and fiber consistency through integrated machinery design and optimization. Maximize throughput and quality with advanced engineering solutions.
@@ -82,6 +89,7 @@ const industriesDetail = [
 • Production Efficiency & Process Optimization
 • Quality Consistency & Operational Reliability`,
     icon: '🧵',
+    image: "/Industries/TEXTILE.jpg",
   },
   
 ]
@@ -116,21 +124,23 @@ export default function IndustriesPage() {
           {industriesDetail.map((industry, index) => (
             <AnimatedText key={industry.id} delay={0.1 + index * 0.1}>
               <div
-                className={`flex flex-col ${
+                id={industry.id}
+                className={`scroll-mt-24 flex flex-col ${
                   index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
                 } gap-8 items-center pb-16 border-b border-border last:border-b-0 last:pb-0`}
               >
-                {/*image icon*/}
-                <div className="w-full lg:w-1/2 flex-shrink-0">
-                  <div className="bg-gradient-to-br from-secondary to-accent rounded-lg aspect-video flex items-center justify-center card-shadow-premium">
-                    <div className="text-center">
-                      <div className="text-6xl mb-2">{industry.icon}</div>
-                      <p className="text-foreground/60 font-semibold">
-                        {industry.title}
-                      </p>
-                    </div>
+              {/* Image */}
+              <div className="w-full lg:w-1/2 flex-shrink-0">
+                <div className="bg-gradient-to-br from-secondary to-accent rounded-lg aspect-video flex items-center justify-center card-shadow-premium">
+                  <div className="text-center w-full h-full">
+                    <img
+                      src={industry.image}
+                      alt={industry.title}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
                   </div>
                 </div>
+              </div>
 
               {/* Content */}
               <div className="w-full lg:w-1/2">

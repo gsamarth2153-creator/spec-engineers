@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LayoutAnimation>{children}</LayoutAnimation>
           <EnquiryModal />
           <Toaster position="bottom-right" />
-        </EnquiryProvider>
+        </EnquiryProvider>        
         <WhatsAppButton />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

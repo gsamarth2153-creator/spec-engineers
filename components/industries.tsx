@@ -39,6 +39,7 @@ export function Industries() {
             Deep expertise across multiple sectors with proven track record of success
           </p>
         </div>
+        
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {industries.map((industry) => (

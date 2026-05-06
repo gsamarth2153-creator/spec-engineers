@@ -59,9 +59,13 @@ export function IndustriesPreview() {
   }
 
   return (
-    <section id="industries" className="py-16 bg-secondary/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-12">
+    <section id="industries" className="py-16 md:py-24 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-80">
+        <img src="/Industry.jpg" className="w-full h-full object-cover" />
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="flex items-center justify-between mb-12 p-8 rounded-2xl backdrop-blur-lg bg-white/60 border border-white/20 shadow-lg">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Industries We Serve

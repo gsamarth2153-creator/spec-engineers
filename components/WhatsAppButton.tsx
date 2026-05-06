@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 const WhatsAppButton: React.FC = () => {
   const [isNearFooter, setIsNearFooter] = useState(false);
 
-  const phoneNumber = "919876543210";
+  const phoneNumber = "+916264054416";
   const message = "Hi, I want to enquire about your services";
 
   const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
@@ -34,7 +34,7 @@ const WhatsAppButton: React.FC = () => {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
-      className={`fixed right-5 z-[9999] md:hidden transition-all duration-500 ease-in-out ${
+      className={`fixed right-5 z-[9999] transition-all duration-500 ease-in-out ${
         isNearFooter ? "bottom-28" : "bottom-5"
       }`}
     >

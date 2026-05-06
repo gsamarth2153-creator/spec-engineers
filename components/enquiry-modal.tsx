@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useEnquiry } from '@/app/enquiry-context'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -54,6 +55,7 @@ export function EnquiryModal() {
     formState: { errors, isSubmitting },
     reset,
     watch,
+    setValue,
   } = useForm<EnquiryForm>({
     resolver: zodResolver(enquirySchema),
     defaultValues: {
@@ -62,7 +64,19 @@ export function EnquiryModal() {
     },
   })
 
+  // Update form when selectedService changes
+  React.useEffect(() => {
+    if (selectedService) {
+      setValue('service', selectedService)
+    }
+  }, [selectedService, setValue])
+
   const watchType = watch('type')
+  
+  // Combine predefined services with selected service if it's not in the list
+  const allServices = selectedService && !services.includes(selectedService)
+    ? [selectedService, ...services]
+    : services
 
   const onSubmit = async (data: EnquiryForm) => {
     try {
@@ -221,7 +235,7 @@ export function EnquiryModal() {
               }`}
             >
               <option value="">Select a service</option>
-              {services.map((service) => (
+              {allServices.map((service) => (
                 <option key={service} value={service}>
                   {service}
                 </option>

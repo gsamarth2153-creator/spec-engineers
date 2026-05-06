@@ -86,9 +86,9 @@ export default function WhyUsPage() {
           {whyUsPoints.map((point, index) => (
             <AnimatedText key={point.title ?? index} delay={0.55 + index * 0.05}>
               <section
-                className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border hover:border-primary/50 transition"
+                className="card-shadow-premium hover:shadow-xl transition-shadow duration-300 industrial-texture bg-card p-8 rounded-lg border border-border hover:border-primary/50 transition"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start h-46 gap-4">
                   <div className="flex-shrink-0">
                     <point.icon className="w-6 h-6 text-primary" />
                   </div>
@@ -108,18 +108,30 @@ export default function WhyUsPage() {
       </div>
 
       {/* About Us Section */}
-      <div className="bg-secondary/10 py-16 border-t border-border">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-foreground mb-12">About SPEC ENGINEERS</h2>
+      <section className="relative overflow-hidden py-5 border-t border-border ">
+        <div className="absolute inset-0 opacity-[50]">
+          <img
+            src="/about-bg.jpg"
+            alt="Engineering blueprint background"
+            className="w-full h-full object-cover"
+          />
+        </div>
+         {/* Soft Overlay */}
+        <div className="absolute inset-0 bg-[#eef3f7]/25 backdrop-blur-[2px]" />
+      
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 ">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 ">
+          <h2 className="text-3xl flex font-bold text-foreground mb-10 rounded-2xl px-10 py-4 h-15 backdrop-blur-lg items-center bg-white/60 border border-white/20 shadow-lg hover:shadow-xl transition-shadow duration-100"
+          >About SPEC ENGINEERS</h2>
           <div className="space-y-8">
             {aboutPoints.map((point, index) => (
-              <div key={index} className="flex gap-6">
+              <div key={index} className="flex gap-6 card-shadow-premium industrial-texture bg-card p-6 rounded-lg border border-border hover:shadow-xl transition-shadow duration-300">
                 <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary text-primary-foreground font-bold">
+                  <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary text-primary-foreground font-bold ">
                     {index + 1}
                   </div>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 ">
                   <h3 className="text-xl font-semibold text-foreground mb-2">
                     {point.title}
                   </h3>
@@ -132,24 +144,25 @@ export default function WhyUsPage() {
           </div>
         </div>
       </div>
+      </section>
 
       {/* Values Section */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-3xl font-bold text-foreground mb-12">Our Values</h2>
         <div className="grid md:grid-cols-3 gap-6">
-          <div className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border text-center">
+          <div className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border text-center hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-2xl font-bold text-primary mb-3">Excellence</h3>
             <p className="text-foreground/70">
               We pursue excellence in every aspect of our work, from technical analysis to client communication.
             </p>
           </div>
-          <div className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border text-center">
+          <div className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border text-center hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-2xl font-bold text-primary mb-3">Integrity</h3>
             <p className="text-foreground/70">
               We conduct business with transparency, honesty, and unwavering commitment to our professional standards.
             </p>
           </div>
-          <div className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border text-center">
+          <div className="card-shadow-premium industrial-texture bg-card p-8 rounded-lg border border-border text-center hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-2xl font-bold text-primary mb-3">Innovation</h3>
             <p className="text-foreground/70">
               We embrace new technologies and methodologies to deliver innovative solutions to evolving challenges.
@@ -159,17 +172,17 @@ export default function WhyUsPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-secondary/10 py-12 border-t border-border">
+      <div className="bg-primary py-12 border-t border-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl font-bold text-background mb-4">
             Ready to partner with SPEC ENGINEERS?
           </h2>
-          <p className="text-foreground/70 mb-6">
+          <p className="text-background/70 mb-6">
             Let&apos;s discuss how we can help achieve your engineering objectives
           </p>
           <button
             onClick={handleEnquire}
-            className="bg-primary text-primary-foreground px-8 py-3 rounded-lg hover:bg-primary/90 font-semibold transition"
+            className="bg-secondary text-primary-foreground px-8 py-3 rounded-lg hover:bg-background/90 font-bold hover:text-primary transition duration-300"
           >
             Get in Touch
           </button>
