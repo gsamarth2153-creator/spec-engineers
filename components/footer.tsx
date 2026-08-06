@@ -107,7 +107,12 @@ export function Footer() {
             <h4 className="font-semibold text-foreground mb-4">Contact</h4>
             <ul className="space-y-2 text-sm text-foreground/70">
               <li>
-                <a href="mailto:info@specengineer.in" className="text-foreground/70 hover:text-primary transition">
+                <a 
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=info@specengineer.in" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-foreground/70 hover:text-primary transition"
+                >
                   info@specengineer.in
                 </a>
               </li>
