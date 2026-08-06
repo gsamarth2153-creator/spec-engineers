@@ -19,7 +19,7 @@ import {
 const enquirySchema = z.object({
   Name: z.string().min(2, 'Name is required'),
   email: z.string().email('Valid email is required'),
-  phone: z.string().min(10, 'Valid phone number is required'),
+  phone: z.string().regex(/^[0-9]{10}$/, 'Please enter a valid 10-digit mobile number'),
   type: z.enum(['individual', 'company']),
   company: z.string().optional(),
   service: z.string().min(1, 'Please select a service'),
@@ -88,7 +88,7 @@ export function EnquiryModal() {
         body: JSON.stringify({
           name: data.Name,
           email: data.email,
-          phone: data.phone,
+          phone: `+91 ${data.phone}`,
           type: data.type,
           company: data.company || null,
           service: data.service,
@@ -149,11 +149,18 @@ export function EnquiryModal() {
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-1">Phone</label>
-            <Input
-              {...register('phone')}
-              placeholder="+91 9876543210"
-              className={errors.phone ? 'border-destructive' : ''}
-            />
+            <div className="flex rounded-md shadow-sm">
+              <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm font-medium select-none">
+                +91
+              </span>
+              <Input
+                {...register('phone')}
+                type="tel"
+                maxLength={10}
+                placeholder="9876543210"
+                className={`rounded-l-none ${errors.phone ? 'border-destructive' : ''}`}
+              />
+            </div>
             {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone.message}</p>}
           </div>
 
