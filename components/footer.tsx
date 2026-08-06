@@ -106,7 +106,7 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-foreground mb-4">Contact</h4>
             <ul className="space-y-2 text-sm text-foreground/70">
-              <li>info@specengineers.com</li>
+              <li>info@specengineer.in</li>
               <li>
                 <a href="https://wa.me/916264054416" target="_blank" rel="noopener noreferrer" className="text-foreground/60 hover:text-primary transition">
                   +916264054416
