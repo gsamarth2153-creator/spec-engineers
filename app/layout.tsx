@@ -18,6 +18,7 @@ const LayoutAnimation = dynamic(() => import('@/components/LayoutAnimation').the
 
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://specengineer.in'),
   title: 'SPEC ENGINEERS | Engineering Consulting & Design Services',
   description: 'Professional engineering consultancy services including manufacturing, automotive, aerospace, energy, and infrastructure design',
   generator: 'Hexmelon Technologies',

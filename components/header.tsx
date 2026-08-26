@@ -20,6 +20,11 @@ export function Header() {
         </Link>
         <ul className="flex gap-6 items-center justify-center md:justify-end">
           <li>
+            <Link href="/products" className="text-m md:text-base whitespace-nowrap text-foreground hover:text-primary transition">
+              Products
+            </Link>
+          </li>
+          <li>
             <Link href="/services" className="text-m md:text-base whitespace-nowrap text-foreground hover:text-primary transition">
               Services
             </Link>

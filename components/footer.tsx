@@ -17,6 +17,19 @@ export function Footer() {
           </div>
 
           <div>
+            <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-sm mb-6">
+              <li>
+                <Link href="/products" className="text-primary font-semibold hover:underline transition">
+                  Products Catalog ↗
+                </Link>
+              </li>
+              <li>
+                <Link href="/services" className="text-foreground/70 hover:text-primary transition">
+                  All Services
+                </Link>
+              </li>
+            </ul>
             <h4 className="font-semibold text-foreground mb-4">Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
