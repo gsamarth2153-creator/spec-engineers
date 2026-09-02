@@ -212,7 +212,7 @@ export async function PUT(
         stock_status || 'in_stock',
         brand ? brand.trim() : null,
         featured ? 1 : 0,
-        status === 'published' ? 'published' : 'draft',
+        status === 'published' ? 'published' : status === 'archived' ? 'archived' : 'draft',
         featured_image,
         specifications ? specifications.trim() : null,
         features ? features.trim() : null,

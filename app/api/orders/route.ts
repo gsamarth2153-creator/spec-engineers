@@ -37,20 +37,35 @@ export async function POST(req: NextRequest) {
 
     const orderQty = Math.max(1, parseInt(quantity) || 1);
 
-    // 2. Fetch authoritative Product from database (DO NOT trust frontend price!)
+    // 2. Fetch authoritative Product from database
     const productRes = await db.execute({
-      sql: "SELECT * FROM products WHERE id = ? AND status = 'published'",
+      sql: 'SELECT * FROM products WHERE id = ?',
       args: [product_id],
     });
 
     if (productRes.rows.length === 0) {
       return NextResponse.json(
-        { success: false, message: 'Product not found or currently unavailable for ordering.' },
+        { success: false, message: 'Product not found or currently unavailable for enquiry.' },
         { status: 404 }
       );
     }
 
     const product = productRes.rows[0] as unknown as Product;
+
+    // Check if product is archived or not published
+    if (product.status === 'archived') {
+      return NextResponse.json(
+        { success: false, message: 'This product has been archived and is no longer accepting enquiry requests.' },
+        { status: 400 }
+      );
+    }
+
+    if (product.status !== 'published') {
+      return NextResponse.json(
+        { success: false, message: 'This product is currently unavailable for enquiry.' },
+        { status: 400 }
+      );
+    }
 
     // Check stock availability
     if (product.stock_status === 'out_of_stock' || product.stock_quantity < orderQty) {

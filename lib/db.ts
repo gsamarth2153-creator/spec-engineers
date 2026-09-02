@@ -214,7 +214,7 @@ export interface Product {
   stock_status: 'in_stock' | 'out_of_stock' | 'low_stock';
   brand: string | null;
   featured: number; // 0 or 1
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'archived';
   featured_image: string;
   specifications: string | null;
   features: string | null;
