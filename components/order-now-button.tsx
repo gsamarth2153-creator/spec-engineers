@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShoppingBag } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { Product } from '@/lib/db';
 import { OrderModal } from '@/components/order-modal';
 
@@ -25,8 +25,8 @@ export function OrderNowButton({ product }: OrderNowButtonProps) {
             : 'bg-primary text-white hover:bg-primary/90 shadow-primary/30'
         }`}
       >
-        <ShoppingBag className="w-5 h-5" />
-        <span>{isOutOfStock ? 'Currently Out of Stock' : 'ORDER NOW'}</span>
+        <Send className="w-5 h-5" />
+        <span>{isOutOfStock ? 'Currently Out of Stock' : 'ENQUIRY NOW'}</span>
       </button>
 
       <OrderModal

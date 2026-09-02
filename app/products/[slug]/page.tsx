@@ -100,11 +100,6 @@ export default async function PublicProductDetailPage({ params }: ProductPagePro
     notFound();
   }
 
-  const hasDiscount = product.sale_price && product.sale_price < product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(((product.price - (product.sale_price || 0)) / product.price) * 100)
-    : 0;
-
   // Format specifications lines
   const specLines = product.specifications
     ? product.specifications.split('\n').filter((line) => line.trim().length > 0)
@@ -150,11 +145,6 @@ export default async function PublicProductDetailPage({ params }: ProductPagePro
                     <Star className="w-3.5 h-3.5 fill-current" /> Featured Product
                   </div>
                 )}
-                {hasDiscount && (
-                  <div className="absolute top-4 right-4 bg-red-600 text-white font-extrabold text-xs px-3 py-1 rounded-full shadow-md">
-                    {discountPercent}% OFF
-                  </div>
-                )}
               </div>
 
               {/* Gallery Thumbnails */}
@@ -172,7 +162,7 @@ export default async function PublicProductDetailPage({ params }: ProductPagePro
               )}
             </div>
 
-            {/* Product Meta & Pricing Box */}
+            {/* Product Meta Box */}
             <div className="space-y-6">
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -197,37 +187,17 @@ export default async function PublicProductDetailPage({ params }: ProductPagePro
                 )}
               </div>
 
-              {/* Price & Stock Banner */}
+              {/* Stock Banner & Enquiry */}
               <div className="p-6 rounded-2xl bg-card border border-border space-y-5 shadow-sm">
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <span className="text-xs font-semibold text-foreground/50 uppercase tracking-wider block mb-1">
-                      Price
-                    </span>
-                    {hasDiscount ? (
-                      <div className="flex items-baseline gap-3">
-                        <span className="text-3xl font-black text-foreground">
-                          ₹{product.sale_price?.toLocaleString('en-IN')}
-                        </span>
-                        <span className="text-base text-foreground/50 line-through">
-                          ₹{product.price.toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-3xl font-black text-foreground">
-                        ₹{product.price.toLocaleString('en-IN')}
-                      </span>
-                    )}
-                  </div>
-
+                <div className="flex items-center justify-between">
                   <div>
                     {product.stock_status === 'in_stock' ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                        <CheckCircle2 className="w-4 h-4" /> In Stock ({product.stock_quantity})
+                        <CheckCircle2 className="w-4 h-4" /> In Stock
                       </span>
                     ) : product.stock_status === 'low_stock' ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                        <AlertTriangle className="w-4 h-4" /> Low Stock ({product.stock_quantity})
+                        <AlertTriangle className="w-4 h-4" /> Low Stock
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
@@ -241,7 +211,7 @@ export default async function PublicProductDetailPage({ params }: ProductPagePro
                   {product.short_description}
                 </p>
 
-                {/* ORDER NOW BUTTON */}
+                {/* ENQUIRY NOW BUTTON */}
                 <div className="pt-2">
                   <OrderNowButton product={product} />
                 </div>
