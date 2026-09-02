@@ -13,6 +13,7 @@ import {
   FileEdit,
   Sparkles,
   Star,
+  Archive,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Category } from '@/lib/db';
@@ -51,7 +52,7 @@ export default function AddProductPage() {
   const [productUrl, setProductUrl] = useState('');
   const [featuredImage, setFeaturedImage] = useState('');
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
-  const [status, setStatus] = useState<'draft' | 'published'>('published');
+  const [status, setStatus] = useState<'draft' | 'published' | 'archived'>('published');
 
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -158,7 +159,7 @@ export default function AddProductPage() {
     setGalleryImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent, targetStatus?: 'draft' | 'published') => {
+  const handleSubmit = async (e: React.FormEvent, targetStatus?: 'draft' | 'published' | 'archived') => {
     e.preventDefault();
     const finalStatus = targetStatus || status;
 
@@ -629,17 +630,36 @@ export default function AddProductPage() {
               >
                 Draft
               </button>
+              <button
+                type="button"
+                onClick={() => setStatus('archived')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition ${
+                  status === 'archived'
+                    ? 'bg-purple-50 text-purple-700 border border-purple-300'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                Archived
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
             <button
               type="button"
               onClick={(e) => handleSubmit(e, 'draft')}
               disabled={submitting}
-              className="flex-1 sm:flex-none px-5 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-sm font-bold transition disabled:opacity-50"
+              className="flex-1 sm:flex-none px-4 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-sm font-bold transition disabled:opacity-50"
             >
-              <FileEdit className="w-4 h-4 inline mr-2" /> Save Draft
+              <FileEdit className="w-4 h-4 inline mr-1.5" /> Save Draft
+            </button>
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e, 'archived')}
+              disabled={submitting}
+              className="flex-1 sm:flex-none px-4 py-3 rounded-xl border border-purple-300 text-purple-700 hover:bg-purple-50 text-sm font-bold transition disabled:opacity-50"
+            >
+              <Archive className="w-4 h-4 inline mr-1.5" /> Save as Archived
             </button>
             <button
               type="submit"

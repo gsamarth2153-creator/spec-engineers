@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   Star,
   Tags,
+  Archive,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Product } from '@/lib/db';
@@ -50,8 +51,7 @@ export default function AdminProductsPage() {
     fetchProducts();
   }, [searchTerm, statusFilter, stockFilter]);
 
-  const handleToggleStatus = async (product: Product) => {
-    const newStatus = product.status === 'published' ? 'draft' : 'published';
+  const handleSetStatus = async (product: Product, newStatus: 'published' | 'draft' | 'archived') => {
     setUpdatingId(product.id);
 
     try {
@@ -66,7 +66,7 @@ export default function AdminProductsPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        toast.success(`Product ${newStatus === 'published' ? 'Published' : 'Unpublished'}`);
+        toast.success(`Product status updated to ${newStatus.toUpperCase()}`);
         fetchProducts();
       } else {
         toast.error(data.message || 'Failed to update status.');
@@ -186,6 +186,7 @@ export default function AdminProductsPage() {
             <option value="all">All Statuses</option>
             <option value="published">Published Only</option>
             <option value="draft">Drafts Only</option>
+            <option value="archived">Archived Only</option>
           </select>
 
           <select
@@ -280,22 +281,19 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="py-4 px-4">
-                      <button
-                        onClick={() => handleToggleStatus(product)}
-                        disabled={updatingId === product.id}
-                        className="transition group"
-                        title="Click to toggle status"
-                      >
-                        {product.status === 'published' ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 group-hover:bg-emerald-100">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Published
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 group-hover:bg-amber-100">
-                            <FileEdit className="w-3.5 h-3.5" /> Draft
-                          </span>
-                        )}
-                      </button>
+                      {product.status === 'published' ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Published
+                        </span>
+                      ) : product.status === 'archived' ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                          <Archive className="w-3.5 h-3.5" /> Archived
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          <FileEdit className="w-3.5 h-3.5" /> Draft
+                        </span>
+                      )}
                     </td>
                     <td className="py-4 px-4 text-center">
                       <button
@@ -319,6 +317,27 @@ export default function AdminProductsPage() {
                       >
                         <Edit className="w-4 h-4" />
                       </Link>
+
+                      {/* Archive / Publish Quick Actions */}
+                      {product.status === 'archived' ? (
+                        <button
+                          onClick={() => handleSetStatus(product, 'published')}
+                          disabled={updatingId === product.id}
+                          className="inline-flex items-center p-2 rounded-xl text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border border-emerald-200 transition"
+                          title="Restore & Publish Product"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleSetStatus(product, 'archived')}
+                          disabled={updatingId === product.id}
+                          className="inline-flex items-center p-2 rounded-xl text-purple-600 hover:text-purple-700 hover:bg-purple-50 border border-purple-200 transition"
+                          title="Archive Product"
+                        >
+                          <Archive className="w-4 h-4" />
+                        </button>
+                      )}
 
                       {product.status === 'published' && (
                         <Link
