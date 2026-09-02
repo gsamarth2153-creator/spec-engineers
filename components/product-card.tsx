@@ -109,7 +109,6 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
         </div>
-        </div>
       </article>
 
       {/* Order Modal */}

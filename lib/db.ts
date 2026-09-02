@@ -153,25 +153,28 @@ export async function initDb(): Promise<void> {
 
 async function autoSeedAdmin(db: Client) {
   try {
-    const countRes = await db.execute(`SELECT COUNT(*) as count FROM admin_users;`);
-    const count = Number(countRes.rows[0]?.count || 0);
+    const defaultEmail = (process.env.ADMIN_EMAIL || 'admin@specengineer.in').trim().toLowerCase();
+    const defaultPassword = process.env.ADMIN_PASSWORD || 'Admin@SpecEngineer2026!';
 
-    if (count === 0) {
-      const defaultEmail = process.env.ADMIN_EMAIL || 'admin@specengineer.in';
-      const defaultPassword = process.env.ADMIN_PASSWORD || 'Admin@SpecEngineer2026!';
+    const userRes = await db.execute({
+      sql: 'SELECT id FROM admin_users WHERE email = ?',
+      args: [defaultEmail],
+    });
+
+    if (userRes.rows.length === 0) {
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(defaultPassword, salt);
-      const id = 'admin_' + Date.now();
+      const id = 'admin_root';
       const now = new Date().toISOString();
 
       await db.execute({
-        sql: `INSERT INTO admin_users (id, email, password_hash, name, role, created_at, updated_at) VALUES (?, ?, ?, ?, 'admin', ?, ?)`,
-        args: [id, defaultEmail.toLowerCase(), passwordHash, 'System Administrator', now, now],
+        sql: `INSERT OR REPLACE INTO admin_users (id, email, password_hash, name, role, created_at, updated_at) VALUES (?, ?, ?, ?, 'admin', ?, ?)`,
+        args: [id, defaultEmail, passwordHash, 'Global Administrator', now, now],
       });
-      console.log(`[Product CMS DB] Default admin user created: ${defaultEmail}`);
+      console.log(`[Product CMS DB] Global admin user initialized: ${defaultEmail}`);
     }
   } catch (err) {
-    console.error('[Product CMS DB] Failed to auto seed default admin user:', err);
+    console.error('[Product CMS DB] Failed to auto seed admin user:', err);
   }
 }
 
