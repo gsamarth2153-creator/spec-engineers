@@ -3,9 +3,7 @@
 import React, { useState } from 'react';
 import {
   X,
-  Minus,
-  Plus,
-  ShoppingBag,
+  Send,
   Loader2,
   CheckCircle2,
   Building2,
@@ -25,7 +23,6 @@ interface OrderModalProps {
 }
 
 export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
-  const [quantity, setQuantity] = useState(1);
   const [fullName, setFullName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
@@ -44,32 +41,10 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
   const [submitting, setSubmitting] = useState(false);
   const [confirmationOrder, setConfirmationOrder] = useState<{
     orderNumber: string;
-    totalAmount: number;
     customerName: string;
   } | null>(null);
 
   if (!isOpen || !product) return null;
-
-  const currentUnitPrice = product.sale_price && product.sale_price < product.price
-    ? product.sale_price
-    : product.price;
-
-  const totalEstimatedAmount = currentUnitPrice * quantity;
-  const maxAvailableStock = product.stock_quantity > 0 ? product.stock_quantity : 999;
-
-  const handleDecreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
-
-  const handleIncreaseQuantity = () => {
-    if (quantity < maxAvailableStock) {
-      setQuantity((prev) => prev + 1);
-    } else {
-      toast.error(`Maximum available stock is ${maxAvailableStock}`);
-    }
-  };
 
   const handleStateChange = (stateVal: string) => {
     setSelectedState(stateVal);
@@ -142,7 +117,7 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           product_id: product.id,
-          quantity: quantity,
+          quantity: 1,
           customer_name: fullName.trim(),
           customer_phone: mobileNumber.trim(),
           customer_email: emailAddress.trim().toLowerCase(),
@@ -160,15 +135,14 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
       if (res.ok && data.success) {
         setConfirmationOrder({
           orderNumber: data.order_number,
-          totalAmount: data.total_amount,
           customerName: fullName.trim(),
         });
-        toast.success('Order request submitted successfully!');
+        toast.success('Enquiry request submitted successfully!');
       } else {
-        toast.error(data.message || 'Failed to submit order request.');
+        toast.error(data.message || 'Failed to submit enquiry request.');
       }
     } catch {
-      toast.error('Network error submitting order.');
+      toast.error('Network error submitting enquiry.');
     } finally {
       setSubmitting(false);
     }
@@ -176,7 +150,6 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
 
   const resetAndClose = () => {
     setConfirmationOrder(null);
-    setQuantity(1);
     setFullName('');
     setMobileNumber('');
     setEmailAddress('');
@@ -197,9 +170,9 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
         {/* Header Bar */}
         <div className="flex items-center justify-between px-6 py-4 bg-muted/60 border-b border-border">
           <div className="flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-primary" />
+            <Send className="w-5 h-5 text-primary" />
             <h2 className="font-extrabold text-lg text-foreground tracking-tight">
-              {confirmationOrder ? 'Order Confirmation' : 'Order Request Form'}
+              {confirmationOrder ? 'Enquiry Confirmation' : 'Enquiry Request Form'}
             </h2>
           </div>
           <button
@@ -219,7 +192,7 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
             </div>
 
             <div>
-              <h3 className="text-2xl font-extrabold text-foreground">Order Request Submitted Successfully!</h3>
+              <h3 className="text-2xl font-extrabold text-foreground">Enquiry Request Submitted Successfully!</h3>
               <p className="text-sm text-foreground/75 mt-2">
                 Thank you, <span className="font-bold text-foreground">{confirmationOrder.customerName}</span>. We have received your request and our engineering sales team will contact you shortly.
               </p>
@@ -228,22 +201,12 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
             {/* Details Box */}
             <div className="bg-muted/40 border border-border rounded-2xl p-6 text-left space-y-3 font-mono text-sm max-w-md mx-auto">
               <div className="flex justify-between border-b border-border/60 pb-2">
-                <span className="text-foreground/60">Order Number:</span>
+                <span className="text-foreground/60">Enquiry Number:</span>
                 <span className="font-bold text-primary">{confirmationOrder.orderNumber}</span>
               </div>
-              <div className="flex justify-between border-b border-border/60 pb-2">
+              <div className="flex justify-between pb-1">
                 <span className="text-foreground/60">Product:</span>
                 <span className="font-bold text-foreground truncate max-w-[200px]">{product.name}</span>
-              </div>
-              <div className="flex justify-between border-b border-border/60 pb-2">
-                <span className="text-foreground/60">Quantity:</span>
-                <span className="font-bold text-foreground">{quantity} unit(s)</span>
-              </div>
-              <div className="flex justify-between pt-1">
-                <span className="text-foreground/60">Estimated Total:</span>
-                <span className="font-extrabold text-base text-foreground">
-                  ₹{confirmationOrder.totalAmount.toLocaleString('en-IN')}
-                </span>
               </div>
             </div>
 
@@ -252,7 +215,7 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
                 onClick={resetAndClose}
                 className="w-full sm:w-auto px-8 py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition shadow-lg shadow-primary/20"
               >
-                Continue Shopping
+                Continue Exploring
               </button>
             </div>
           </div>
@@ -260,55 +223,23 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
           /* Order Form */
           <form onSubmit={handleSubmitOrder} className="p-6 space-y-6 overflow-y-auto flex-1">
             {/* Auto Selected Product Info Box */}
-            <div className="bg-muted/50 border border-border rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                <img
-                  src={product.featured_image}
-                  alt={product.name}
-                  className="w-16 h-16 object-cover rounded-xl border border-border bg-background flex-shrink-0"
-                />
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-                    {product.category_name}
-                  </span>
-                  <h3 className="font-bold text-sm text-foreground leading-snug line-clamp-1">{product.name}</h3>
+            <div className="bg-muted/50 border border-border rounded-2xl p-4 flex items-center gap-4">
+              <img
+                src={product.featured_image}
+                alt={product.name}
+                className="w-16 h-16 object-cover rounded-xl border border-border bg-background flex-shrink-0"
+              />
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                  {product.category_name}
+                </span>
+                <h3 className="font-bold text-sm text-foreground leading-snug line-clamp-2">{product.name}</h3>
+                {product.sku && (
                   <div className="text-xs text-foreground/60 font-mono mt-0.5">
-                    Unit Price: <span className="font-bold text-foreground">₹{currentUnitPrice.toLocaleString('en-IN')}</span>
+                    Model / SKU: <span className="font-bold text-foreground">{product.sku}</span>
                   </div>
-                </div>
+                )}
               </div>
-
-              {/* Quantity Selector */}
-              <div className="flex items-center justify-between w-full sm:w-auto gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
-                <div className="text-xs font-semibold text-foreground/70 uppercase">Qty:</div>
-                <div className="flex items-center border border-border bg-background rounded-xl overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={handleDecreaseQuantity}
-                    disabled={quantity <= 1}
-                    className="p-2 text-foreground/70 hover:text-foreground hover:bg-muted transition disabled:opacity-30"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="px-3 py-1 font-bold text-sm text-foreground min-w-[2.5rem] text-center">
-                    {quantity}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleIncreaseQuantity}
-                    disabled={quantity >= maxAvailableStock}
-                    className="p-2 text-foreground/70 hover:text-foreground hover:bg-muted transition disabled:opacity-30"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Total Calculation Display */}
-            <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">Total Estimated Amount:</span>
-              <span className="text-2xl font-black text-foreground">₹{totalEstimatedAmount.toLocaleString('en-IN')}</span>
             </div>
 
             {/* Customer Information Inputs */}
@@ -506,12 +437,12 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
                 {submitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Processing Order Request...</span>
+                    <span>Processing Enquiry Request...</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-5 h-5" />
-                    <span>Submit Order Request</span>
+                    <Send className="w-5 h-5" />
+                    <span>Submit Enquiry Request</span>
                   </>
                 )}
               </button>

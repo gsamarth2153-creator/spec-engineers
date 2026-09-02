@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Star, ShoppingBag, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { ArrowRight, Star, Send, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { Product } from '@/lib/db';
 import { OrderModal } from '@/components/order-modal';
 
@@ -12,11 +12,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-
-  const hasDiscount = product.sale_price && product.sale_price < product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(((product.price - (product.sale_price || 0)) / product.price) * 100)
-    : 0;
 
   const isOutOfStock = product.stock_status === 'out_of_stock' || product.stock_quantity <= 0;
 
@@ -46,12 +41,6 @@ export function ProductCard({ product }: ProductCardProps) {
               </span>
             )}
           </div>
-
-          {hasDiscount && (
-            <div className="absolute top-3 right-3 bg-red-600 text-white font-extrabold text-xs px-2.5 py-1 rounded-full shadow-md">
-              {discountPercent}% OFF
-            </div>
-          )}
         </div>
 
         {/* Product Body */}
@@ -74,27 +63,9 @@ export function ProductCard({ product }: ProductCardProps) {
             </p>
           </div>
 
-          {/* Pricing & Stock Footer */}
+          {/* Stock Footer & Action Buttons */}
           <div className="pt-4 border-t border-border/80 space-y-3">
-            <div className="flex items-baseline justify-between">
-              {/* Price */}
-              <div>
-                {hasDiscount ? (
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-extrabold text-foreground">
-                      ₹{product.sale_price?.toLocaleString('en-IN')}
-                    </span>
-                    <span className="text-xs text-foreground/50 line-through">
-                      ₹{product.price.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-xl font-extrabold text-foreground">
-                    ₹{product.price.toLocaleString('en-IN')}
-                  </span>
-                )}
-              </div>
-
+            <div className="flex items-center justify-between">
               {/* Stock Status Badge */}
               <div>
                 {product.stock_status === 'in_stock' ? (
@@ -113,7 +84,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </div>
             </div>
 
-            {/* Action Buttons: Order Now & View Details */}
+            {/* Action Buttons: Enquiry Now & View Details */}
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setIsOrderModalOpen(true)}
@@ -124,8 +95,8 @@ export function ProductCard({ product }: ProductCardProps) {
                     : 'bg-primary text-white hover:bg-primary/90 shadow-primary/20'
                 }`}
               >
-                <ShoppingBag className="w-4 h-4" />
-                <span>{isOutOfStock ? 'Out of Stock' : 'Order Now'}</span>
+                <Send className="w-3.5 h-3.5" />
+                <span>{isOutOfStock ? 'Out of Stock' : 'Enquiry Now'}</span>
               </button>
 
               <Link
@@ -137,6 +108,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </Link>
             </div>
           </div>
+        </div>
         </div>
       </article>
 
