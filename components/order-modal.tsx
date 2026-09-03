@@ -112,21 +112,22 @@ export function OrderModal({ product, isOpen, onClose }: OrderModalProps) {
     const finalCity = selectedCity === 'OTHER' ? customCity.trim() : selectedCity;
 
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          product_id: product.id,
-          quantity: 1,
-          customer_name: fullName.trim(),
-          customer_phone: mobileNumber.trim(),
-          customer_email: emailAddress.trim().toLowerCase(),
-          company_name: companyName.trim() || null,
-          address: address.trim(),
-          city: finalCity,
-          state: finalState,
-          pincode: pincode.trim(),
-          additional_requirements: additionalReqs.trim() || null,
+          name: fullName.trim(),
+          phone: mobileNumber.replace(/[\s\-+()]/g, ''),
+          email: emailAddress.trim().toLowerCase(),
+          company: companyName.trim() || null,
+          service: `Product enquiry: ${product.name}${product.sku ? ` (${product.sku})` : ''}`,
+          type: 'product',
+          message: [
+            `Product ID: ${product.id}`,
+            `Quantity: 1`,
+            `Delivery address: ${address.trim()}, ${finalCity}, ${finalState} - ${pincode.trim()}`,
+            additionalReqs.trim() ? `Additional requirements: ${additionalReqs.trim()}` : null,
+          ].filter(Boolean).join('\\n'),
         }),
       });
 
