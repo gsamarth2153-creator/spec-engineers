@@ -4,6 +4,13 @@ import path from 'path';
 import fs from 'fs';
 
 let clientInstance: Client | null = null;
+let isDbInitialized = false;
+let initPromise: Promise<void> | null = null;
+
+export function resetDbInitCache(): void {
+  isDbInitialized = false;
+  initPromise = null;
+}
 
 export function getDb(): Client {
   if (clientInstance) {
@@ -29,20 +36,42 @@ export function getDb(): Client {
 }
 
 export async function initDb(): Promise<void> {
-  const db = getDb();
+  if (isDbInitialized) {
+    return;
+  }
+  if (initPromise) {
+    return initPromise;
+  }
 
-  // 1. Create admin_users table
-  await db.execute(`
-    CREATE TABLE IF NOT EXISTS admin_users (
-      id TEXT PRIMARY KEY,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      name TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'admin',
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    );
-  `);
+  initPromise = (async () => {
+    const db = getDb();
+
+    // 1. Create admin_users table
+    await db.execute(`
+      CREATE TABLE IF NOT EXISTS admin_users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        name TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'admin',
+        permissions TEXT,
+        is_super_admin INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+    `);
+
+    // Safe migrations for existing databases
+    try {
+      await db.execute(`ALTER TABLE admin_users ADD COLUMN permissions TEXT;`);
+    } catch {
+      // Column already exists
+    }
+    try {
+      await db.execute(`ALTER TABLE admin_users ADD COLUMN is_super_admin INTEGER NOT NULL DEFAULT 0;`);
+    } catch {
+      // Column already exists
+    }
 
   // 2. Create categories table
   await db.execute(`
@@ -146,9 +175,12 @@ export async function initDb(): Promise<void> {
   await db.execute(`CREATE INDEX IF NOT EXISTS idx_orders_order_number ON orders(order_number);`);
   await db.execute(`CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);`);
   await db.execute(`CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);`);
-
   // Auto seed default admin if no admin exists
-  await autoSeedAdmin(db);
+    await autoSeedAdmin(db);
+    isDbInitialized = true;
+  })();
+
+  return initPromise;
 }
 
 async function autoSeedAdmin(db: Client) {
@@ -157,8 +189,18 @@ async function autoSeedAdmin(db: Client) {
     const defaultPassword = process.env.ADMIN_PASSWORD || 'Admin@SpecEngineer2026!';
 
     const userRes = await db.execute({
-      sql: 'SELECT id FROM admin_users WHERE email = ?',
+      sql: 'SELECT id, password_hash FROM admin_users WHERE email = ?',
       args: [defaultEmail],
+    });
+
+    const fullPermissions = JSON.stringify({
+      dashboard: true,
+      orders: true,
+      orders_edit: true,
+      products: true,
+      products_edit: true,
+      categories: true,
+      categories_edit: true,
     });
 
     if (userRes.rows.length === 0) {
@@ -168,14 +210,42 @@ async function autoSeedAdmin(db: Client) {
       const now = new Date().toISOString();
 
       await db.execute({
-        sql: `INSERT OR REPLACE INTO admin_users (id, email, password_hash, name, role, created_at, updated_at) VALUES (?, ?, ?, ?, 'admin', ?, ?)`,
-        args: [id, defaultEmail, passwordHash, 'Global Administrator', now, now],
+        sql: `INSERT OR REPLACE INTO admin_users (id, email, password_hash, name, role, permissions, is_super_admin, created_at, updated_at) VALUES (?, ?, ?, ?, 'super_admin', ?, 1, ?, ?)`,
+        args: [id, defaultEmail, passwordHash, 'Global Administrator', fullPermissions, now, now],
       });
-      console.log(`[Product CMS DB] Global admin user initialized: ${defaultEmail}`);
+      console.log(`[Product CMS DB] Global super admin user initialized: ${defaultEmail}`);
+    } else {
+      // If user already exists, ensure password hash matches the configured ADMIN_PASSWORD and has super_admin role
+      const currentHash = userRes.rows[0].password_hash as string;
+      const matches = await bcrypt.compare(defaultPassword, currentHash);
+      const now = new Date().toISOString();
+
+      if (!matches) {
+        const salt = await bcrypt.genSalt(10);
+        const newHash = await bcrypt.hash(defaultPassword, salt);
+        await db.execute({
+          sql: `UPDATE admin_users SET password_hash = ?, role = 'super_admin', is_super_admin = 1, permissions = ?, updated_at = ? WHERE email = ?`,
+          args: [newHash, fullPermissions, now, defaultEmail],
+        });
+        console.log(`[Product CMS DB] Admin password successfully updated for: ${defaultEmail}`);
+      } else {
+        // Ensure root administrator retains super_admin status & permissions
+        await db.execute({
+          sql: `UPDATE admin_users SET role = 'super_admin', is_super_admin = 1, permissions = ? WHERE email = ?`,
+          args: [fullPermissions, defaultEmail],
+        });
+      }
     }
   } catch (err) {
     console.error('[Product CMS DB] Failed to auto seed admin user:', err);
   }
+}
+
+export interface AdminPermissions {
+  dashboard: boolean;
+  orders: boolean;
+  products: boolean;
+  categories: boolean;
 }
 
 export interface AdminUser {
@@ -183,7 +253,9 @@ export interface AdminUser {
   email: string;
   password_hash: string;
   name: string;
-  role: 'admin';
+  role: 'super_admin' | 'admin';
+  permissions?: string;
+  is_super_admin: number;
   created_at: string;
   updated_at: string;
 }

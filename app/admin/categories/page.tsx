@@ -17,6 +17,7 @@ function slugify(text: string): string {
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [canEdit, setCanEdit] = useState(true);
 
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -46,6 +47,18 @@ export default function AdminCategoriesPage() {
 
   useEffect(() => {
     fetchCategories();
+    fetch('/api/admin/auth/me')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success && d.user) {
+          if (d.user.isSuperAdmin) {
+            setCanEdit(true);
+          } else if (d.user.permissions?.categories_edit === false) {
+            setCanEdit(false);
+          }
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,93 +156,106 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <Tags className="w-7 h-7 text-blue-600" />
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <Tags className="w-6 h-6 sm:w-7 sm:h-7 text-blue-600" />
           <span>Product Categories</span>
         </h1>
-        <p className="text-slate-500 text-sm mt-1 font-medium">
+        <p className="text-slate-500 text-xs sm:text-sm mt-1 font-medium">
           Organize products into distinct category hierarchies for store navigation.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-        {/* Form Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-            <Sparkles className="w-4 h-4 text-blue-600" />
-            <span>{editingCategory ? 'Edit Category' : 'Add New Category'}</span>
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Category Name *
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={handleNameChange}
-                placeholder="e.g., Grinding Machinery"
-                required
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Slug *
-              </label>
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(slugify(e.target.value))}
-                placeholder="grinding-machinery"
-                required
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Description
-              </label>
-              <textarea
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief category overview..."
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
-              />
-            </div>
-
-            <div className="flex items-center gap-3 pt-2">
-              {editingCategory && (
-                <button
-                  type="button"
-                  onClick={cancelEdit}
-                  className="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold transition"
-                >
-                  Cancel
-                </button>
-              )}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold rounded-xl shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition disabled:opacity-50"
-              >
-                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                <span>{editingCategory ? 'Update' : 'Create Category'}</span>
-              </button>
-            </div>
-          </form>
+      {!canEdit && (
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 text-amber-900 text-xs font-semibold shadow-2xs">
+          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+          <span>
+            <strong>Read-Only Mode:</strong> You have viewing access to categories. Creating new categories, editing existing ones, and deleting categories are restricted by administrator.
+          </span>
         </div>
+      )}
+
+      <div className={`grid grid-cols-1 ${canEdit ? 'lg:grid-cols-3' : 'max-w-3xl'} gap-6 sm:gap-8 items-start`}>
+        {/* Form Card (Only shown if canEdit) */}
+        {canEdit && (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4">
+            <h2 className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <span>{editingCategory ? 'Edit Category' : 'Add New Category'}</span>
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Category Name *
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={handleNameChange}
+                  placeholder="e.g., Grinding Machinery"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Slug *
+                </label>
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(slugify(e.target.value))}
+                  placeholder="grinding-machinery"
+                  required
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Brief category overview..."
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition"
+                />
+              </div>
+
+              <div className="flex items-center gap-2.5 pt-2">
+                {editingCategory && (
+                  <button
+                    type="button"
+                    onClick={cancelEdit}
+                    className="flex-1 py-2.5 px-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold transition"
+                  >
+                    Cancel
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold rounded-xl shadow-sm shadow-blue-500/20 flex items-center justify-center gap-2 transition disabled:opacity-50"
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  <span>{editingCategory ? 'Update' : 'Create Category'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
 
         {/* Categories List */}
-        <div className="md:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3">Existing Categories</h2>
+        <div className={`${canEdit ? 'lg:col-span-2' : 'w-full'} bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-xs space-y-4`}>
+          <h2 className="text-sm sm:text-base font-extrabold text-slate-900 border-b border-slate-100 pb-3">
+            Existing Categories
+          </h2>
 
           {loading ? (
             <div className="py-12 flex justify-center text-slate-500">
@@ -242,29 +268,33 @@ export default function AdminCategoriesPage() {
           ) : (
             <div className="divide-y divide-slate-100">
               {categories.map((cat) => (
-                <div key={cat.id} className="py-3.5 flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="font-extrabold text-slate-900 text-sm">{cat.name}</h3>
-                    <p className="text-xs text-slate-500 font-mono">slug: {cat.slug}</p>
-                    {cat.description && <p className="text-xs text-slate-600 mt-1 line-clamp-1">{cat.description}</p>}
+                <div key={cat.id} className="py-3 sm:py-3.5 flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-extrabold text-slate-900 text-sm truncate">{cat.name}</h3>
+                    <p className="text-[11px] text-slate-500 font-mono">slug: {cat.slug}</p>
+                    {cat.description && (
+                      <p className="text-xs text-slate-600 mt-0.5 line-clamp-1">{cat.description}</p>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => startEdit(cat)}
-                      className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition"
-                      title="Edit Category"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteModalId(cat.id)}
-                      className="p-2 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 transition"
-                      title="Delete Category"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {canEdit && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => startEdit(cat)}
+                        className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition"
+                        title="Edit Category"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteModalId(cat.id)}
+                        className="p-2 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 transition"
+                        title="Delete Category"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

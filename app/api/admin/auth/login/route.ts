@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     // Query user by email
     const userRes = await db.execute({
-      sql: 'SELECT id, email, password_hash, name, role FROM admin_users WHERE email = ?',
+      sql: 'SELECT id, email, password_hash, name, role, permissions, is_super_admin FROM admin_users WHERE email = ?',
       args: [cleanEmail],
     });
 
@@ -35,8 +35,9 @@ export async function POST(req: Request) {
     const user = userRes.rows[0];
     const passwordHash = user.password_hash as string;
     const userRole = user.role as string;
+    const isSuperAdmin = userRole === 'super_admin' || user.is_super_admin === 1;
 
-    if (userRole !== 'admin') {
+    if (userRole !== 'admin' && userRole !== 'super_admin') {
       return NextResponse.json(
         { success: false, message: 'Unauthorized. Admin role required.' },
         { status: 403 }
@@ -52,12 +53,26 @@ export async function POST(req: Request) {
       );
     }
 
+    let permissions = {
+      dashboard: true,
+      orders: true,
+      products: true,
+      categories: true,
+    };
+    if (user.permissions) {
+      try {
+        permissions = typeof user.permissions === 'string' ? JSON.parse(user.permissions as string) : user.permissions;
+      } catch {}
+    }
+
     // Sign JWT token
     const token = await signAdminToken({
       userId: user.id as string,
       email: user.email as string,
       name: (user.name as string) || 'Admin',
-      role: 'admin',
+      role: isSuperAdmin ? 'super_admin' : 'admin',
+      isSuperAdmin,
+      permissions,
     });
 
     // Create response with HTTP-only cookie
@@ -68,6 +83,8 @@ export async function POST(req: Request) {
         email: user.email,
         name: user.name,
         role: user.role,
+        isSuperAdmin,
+        permissions,
       },
     });
 

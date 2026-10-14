@@ -61,16 +61,16 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-8 shadow-xl space-y-8">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-3.5 sm:p-4">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="text-center space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center font-extrabold text-2xl shadow-lg shadow-blue-500/30">
+        <div className="text-center space-y-2.5 sm:space-y-3">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center font-extrabold text-xl sm:text-2xl shadow-lg shadow-blue-500/30">
             SE
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">SPEC ENGINEERS</h1>
-            <p className="text-xs font-bold uppercase tracking-wider text-blue-600 mt-1">Admin Portal Access</p>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">SPEC ENGINEERS</h1>
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-blue-600 mt-1">Admin Portal Access</p>
           </div>
         </div>
 

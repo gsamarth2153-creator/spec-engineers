@@ -35,13 +35,25 @@ export async function GET(req: NextRequest) {
     const result = await db.execute({ sql: query, args: params });
     const orders = result.rows as unknown as Order[];
 
-    // Attach items preview to each order
-    for (const order of orders) {
+    // Attach items preview to each order using a single batch query (O(1) roundtrip)
+    if (orders.length > 0) {
+      const orderIds = orders.map((o) => o.id);
+      const placeholders = orderIds.map(() => '?').join(',');
       const itemsRes = await db.execute({
-        sql: 'SELECT * FROM order_items WHERE order_id = ?',
-        args: [order.id],
+        sql: `SELECT * FROM order_items WHERE order_id IN (${placeholders})`,
+        args: orderIds,
       });
-      order.items = itemsRes.rows as unknown as any[];
+
+      const itemsMap: Record<string, any[]> = {};
+      for (const item of itemsRes.rows) {
+        const oId = String(item.order_id);
+        if (!itemsMap[oId]) itemsMap[oId] = [];
+        itemsMap[oId].push(item);
+      }
+
+      for (const order of orders) {
+        order.items = itemsMap[order.id] || [];
+      }
     }
 
     return NextResponse.json({ success: true, orders });

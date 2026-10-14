@@ -260,19 +260,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-5 sm:space-y-6">
       {/* Top Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <Link
             href="/admin/products"
-            className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-sm"
+            className="p-2 sm:p-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-xs"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900">Edit Product</h1>
-            <p className="text-xs text-slate-500 font-mono">ID: {id}</p>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">Edit Product</h1>
+            <p className="text-[11px] sm:text-xs text-slate-500 font-mono">ID: {id}</p>
           </div>
         </div>
 
@@ -621,14 +621,14 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 bg-white border border-slate-200 rounded-2xl shadow-md">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Visibility Status:</span>
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 p-4 sm:p-6 bg-white border border-slate-200 rounded-2xl shadow-xs">
+          <div className="flex items-center justify-between sm:justify-start gap-2.5">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0">Visibility:</span>
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => setStatus('published')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${
                   status === 'published'
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
                     : 'text-slate-500 hover:text-slate-900'
@@ -639,7 +639,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <button
                 type="button"
                 onClick={() => setStatus('draft')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${
                   status === 'draft'
                     ? 'bg-amber-50 text-amber-700 border border-amber-300'
                     : 'text-slate-500 hover:text-slate-900'
@@ -650,7 +650,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <button
                 type="button"
                 onClick={() => setStatus('archived')}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${
                   status === 'archived'
                     ? 'bg-purple-50 text-purple-700 border border-purple-300'
                     : 'text-slate-500 hover:text-slate-900'
@@ -661,20 +661,20 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <Link
               href="/admin/products"
-              className="flex-1 sm:flex-none px-5 py-3 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-sm font-bold transition text-center"
+              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs sm:text-sm font-bold transition text-center"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 sm:flex-none px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-extrabold shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition disabled:opacity-50"
+              className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-extrabold shadow-sm shadow-blue-500/20 flex items-center justify-center gap-1.5 transition disabled:opacity-50"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>Save Product Changes</span>
+              <span>Save Changes</span>
             </button>
           </div>
         </div>
