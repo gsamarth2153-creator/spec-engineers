@@ -98,13 +98,14 @@ export function ServicesPreview() {
                 }`}
               >
                 {service.featured && (
-                  <div className="absolute top-0 right-[10px] z-10
+                  <div className="md:absolute md:top-0 md:right-[10px] z-10
                     bg-[#002F64] text-white
-                    text-sm font-semibold
-                    px-4 py-2
+                    text-xs md:text-sm font-semibold
+                    px-3 py-1 md:px-4 md:py-2
                     rounded-[5px]
-                    border border-[#002F64]">
-                    Experties
+                    border border-[#002F64]
+                    w-fit mb-3 md:mb-0">
+                    Expertise
                   </div>
                 )}
                 <div className={`${service.featured ? 'flex-1' : ''} flex flex-col justify-between h-full w-full`}>
